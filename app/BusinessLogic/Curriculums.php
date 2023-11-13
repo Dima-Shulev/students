@@ -51,11 +51,15 @@ class Curriculums
 
                 //Использование жадной загрузки
                 $query_curriculum = Curriculum::find($id)->with('school_class')->where('id',$id)->first();
+
+
                 $show['plan'] = $query_curriculum->plan;
                 $show['class'] = $query_curriculum->school_class->name;
                 $show['all_lecture'] = [];
-
+                /*dd($query_curriculum);*/
                 //если есть лекции в плане то перебрать и добавить в массив
+
+
                 if($query_curriculum->lectures !== null) {
                     foreach ($query_curriculum->lectures as $lecture) {
                         $show['all_lecture'][] = $lecture->theme;

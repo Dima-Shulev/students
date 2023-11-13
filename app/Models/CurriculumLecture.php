@@ -9,7 +9,7 @@ class CurriculumLecture extends Model
 {
     use HasFactory;
 
-    protected $table = 'curriculums_lectures';
+    protected $table = 'curriculum_lecture';
     protected $fillable = ['curriculum_id','lecture_id','schedule'];
     public $timestamps = false;
 }
