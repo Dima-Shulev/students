@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidCreateAndUpdateLecture extends FormRequest
+class ValidUpdateClass extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class ValidCreateAndUpdateLecture extends FormRequest
     public function rules(): array
     {
         return [
-            'theme' => ['required','string','unique:lectures,theme'],
-            'description' => ['required','string']
+            'name' => ['required','string']
         ];
     }
 }

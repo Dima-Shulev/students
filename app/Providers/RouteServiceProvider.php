@@ -40,6 +40,7 @@ class RouteServiceProvider extends ServiceProvider
                     require_once base_path('routes/classes.php');
                     require_once base_path('routes/lectures.php');
                     require_once base_path('routes/curriculums.php');
+                    require_once base_path('routes/schedules.php');
                 });
         });
     }

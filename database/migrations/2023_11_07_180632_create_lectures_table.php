@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('theme')->unique();
             $table->text('description');
-            $table->unsignedBigInteger('curriculum_id')->default(null);
-            $table->foreign('curriculum_id')->references('id')->on('curriculums');
         });
     }
 

@@ -17,8 +17,4 @@ class Curriculum extends Model
     public function school_class(){
         return $this->belongsTo('App\Models\SchoolClass');
     }
-
-   /* public function lectures(){
-        return $this->hasMany('App\Models\Lecture');
-    }*/
 }

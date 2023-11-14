@@ -11,10 +11,6 @@ class Lecture extends Model
     use HasFactory, HasPlansAndLectures ;
 
     protected $table = 'lectures';
-    protected $fillable = ['theme','description','curriculum_id'];
+    protected $fillable = ['theme','description'];
     public $timestamps = false;
-
-    /*public function curriculum(){
-        return $this->belongsTo('App\Models\Curriculum');
-    }*/
 }

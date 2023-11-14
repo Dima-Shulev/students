@@ -30,10 +30,12 @@ class Curriculums
     public static function store_curriculum($request)
     {
         try{
-           Curriculum::query()->create([
+           $create_plan = Curriculum::query()->create([
                 'plan' => $request->plan,
                 'school_class_id' => $request->school_class_id
             ]);
+
+           return json_encode($create_plan);
 
         }catch(Exception $e){
             echo "Ошибка: " . $e->getMessage();
@@ -56,9 +58,8 @@ class Curriculums
                 $show['plan'] = $query_curriculum->plan;
                 $show['class'] = $query_curriculum->school_class->name;
                 $show['all_lecture'] = [];
-                /*dd($query_curriculum);*/
-                //если есть лекции в плане то перебрать и добавить в массив
 
+                //если есть лекции в плане то перебрать и добавить в массив
 
                 if($query_curriculum->lectures !== null) {
                     foreach ($query_curriculum->lectures as $lecture) {

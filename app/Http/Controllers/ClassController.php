@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidCreateAndUpdateClass;
+use App\Http\Requests\ValidCreateClass;
+use App\Http\Requests\ValidUpdateClass;
 use App\BusinessLogic\Classes;
+
 
 class ClassController extends Controller
 {
@@ -16,7 +18,7 @@ class ClassController extends Controller
         return Classes::create_class();
     }*/
 
-    public function storeClass(ValidCreateAndUpdateClass $request){
+    public function storeClass(ValidCreateClass $request){
         return Classes::store_class($request);
     }
 
@@ -28,7 +30,7 @@ class ClassController extends Controller
         return Classes::edit_class($id);
     }*/
 
-    public function updateClass($id,ValidCreateAndUpdateClass $request){
+    public function updateClass($id, ValidUpdateClass $request){
         return Classes::update_class($id,$request);
     }
 

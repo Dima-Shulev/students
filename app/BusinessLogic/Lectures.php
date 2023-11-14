@@ -2,8 +2,10 @@
 
 namespace App\BusinessLogic;
 
+use App\Models\CurriculumLecture;
 use App\Models\Lecture;
 use App\Models\SchoolClass;
+use App\Models\Student;
 use Exception;
 
 class Lectures
@@ -12,8 +14,7 @@ class Lectures
     public static function all_lectures()
     {
         try {
-            $all_lectures = Lecture::select('theme')->orderBy('theme', 'ASC')->get();
-
+            $all_lectures = Lecture::select(['theme','description'])->orderBy('theme', 'ASC')->get();
             return json_encode($all_lectures);
 
         }catch(Exception $e){
@@ -31,11 +32,12 @@ class Lectures
     public static function store_lecture($request)
     {
         try {
-            Lecture::query()->create([
-                'theme' => $request->theme,
-                'description' => $request->description,
-                'curriculum_id' => $request->curriculum_id
-            ]);
+              $create_lecture = Lecture::query()->create([
+                    'theme' => $request->theme,
+                    'description' => $request->description
+              ]);
+
+           return json_encode($create_lecture);
 
         }catch(Exception $e){
             echo "Ошибка: " . $e->getMessage();
@@ -45,39 +47,59 @@ class Lectures
     //Показать конкретную лекцию, классы, студенты
     public static function show_lecture(int $id)
     {
-        $check = $show_lecture = Lecture::find($id);
-
+        $check = Lecture::find($id);
         //проверка существования такой лекции
         if($check) {
             try {
-                //получение данных и запись в массив
+                //создание массива для данных
                 $show = [];
+                $get_date_and_time = date('Y-m-d H:i:s');
 
-                //выборка с жадной загрузкой лекции и учебного плана
-                $show_lecture = Lecture::find($id)->with('curriculum')->first();
+                //выборка с жадной загрузкой лекции
+                $show_lecture = Lecture::find($id)->with('curriculums')->where('id', $id)->get();
 
-                $show['theme'] = $show_lecture->theme;
-                $show['description'] = $show_lecture->description;
-
-                $number_class = $show_lecture->curriculum->school_class_id;
-
-                //выборка с жадной загрузкой класса и студентов
-                $show_class = SchoolClass::find($number_class)->with('students')->get();
-                $show['students'] = [];
-
-                foreach ($show_class as $item) {
-                    $show['class'] = $item->name;
-                    foreach ($item->students as $student) {
-                        $show['students'][] = $student->name;
-                    }
+                foreach ($show_lecture as $theme) {
+                    $show['id'] = $theme->id;
+                    $show['theme'] = $theme->theme;
+                    $show['description'] = $theme->description;
                 }
+                $show['class'] = [];
 
-                //Вывод в виде массива с преобразованием в JSON
+                $query_schedules = CurriculumLecture::all()->where('lecture_id',$show['id'])->where('schedule','<',$get_date_and_time);
+                //проверка прошла ли лекция по расписанию или еще будет
+                if(!$query_schedules->isEmpty()) {
+
+                    //получение id классов, которые относятся к лекции
+                    foreach ($show_lecture as $id) {
+                        foreach ($id->curriculums as $class) {
+                            $query_class = SchoolClass::find((int)$class->school_class_id)->with('students')->where('id', $class->school_class_id)->get();
+
+                            foreach ($query_class as $item) {
+                                //получение всех студентов данного класса
+                                $query_students = Student::select(['name', 'school_class_id'])->where('school_class_id', $item->id)->get();
+
+                                //вывод всех классов относящихся к лекции
+                                foreach ($query_class as $class) {
+                                    $show['class'][$class->name] = [];
+
+                                    //вывод всех студентов относящихся к лекции
+                                    foreach ($query_students as $student) {
+                                        $show['class'][$class->name][] = $student->name;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    $show['class'] = ['Пока лекция не прошла не в одном классе! '];
+                }
                 return json_encode($show);
 
-            } catch (Exception $e) {
+           } catch (Exception $e) {
                 echo "Ошибка: " . $e->getMessage();
             }
+        }else{
+            throw new Exception('Ошибка. Такой лекции нет !');
         }
     }
 
